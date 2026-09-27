@@ -1,0 +1,27 @@
+name: maize_2019_to_2021
+source: {team: Bipbip, crop: Mais, year: "2019"}
+target: {team: Bipbip, crop: Mais, year: "2021"}
+seeds: [0, 1, 2]
+
+teacher_pred_dir: outputs/teacher_preds/maize_2019_to_2021   # saved softmax .npy per target image
+out_dir: outputs/refined/maize_2019_to_2021
+
+sam:
+  checkpoint: checkpoints/sam2.1_hiera_large.pt
+  model_cfg: configs/sam2.1/sam2.1_hiera_l.yaml
+  points_per_side: 32
+  pred_iou_thresh: 0.8
+  stability_score_thresh: 0.9
+  min_mask_region_area: 50
+
+merge:
+  enabled: true
+  feature_model: facebook/dinov3-vits16-pretrain-lvd1689m   # gated on Hugging Face; request access
+  feature_long_side: 1024   # DINO input long side (aspect kept); 1024 -> 48x64 grid for 4:3
+  sim_thresh: 0.85
+  dilate_px: 3
+
+vote:
+  conf_thresh: 0.7
+  min_purity: 0.6
+  min_confident_pixels: 20

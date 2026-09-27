@@ -1,0 +1,28 @@
+# ROSE dataset layout. Verified 2026-09-27 against the Mendeley Dataset.zip
+# (Dataset/README.txt and the authors' scripts/utils.py read_rgb_mask).
+num_classes: 3
+class_names: [background, crop, weed]
+ignore_index: 255
+
+# RGB mask colors -> class. A class may have several colors.
+# Orange (254,124,18) is listed as background in Dataset/README.txt.
+# Any color not listed here becomes ignore_index.
+mask_colors:
+  background: [[0, 0, 0], [254, 124, 18]]
+  crop: [[255, 255, 255]]
+  weed: [[216, 67, 82]]
+
+# Folders relative to the raw root (data/rose_zips/Dataset).
+# Masks are matched to images by file stem inside each folder.
+image_dir: "{year}/{team}/{crop}/Images"
+mask_dir: "{year}/{team}/{crop}/Masks"
+image_exts: [".jpg", ".png"]   # Roseau images are .png, the other teams .jpg
+
+# Folder names per year. Mais = maize, Haricot = bean. 2021 is Bipbip only.
+folders:
+  "2019":
+    teams: [Bipbip, Pead, Roseau, Weedelec]
+    crops: [Haricot, Mais]
+  "2021":
+    teams: [Bipbip]
+    crops: [Haricot_2021, Mais_2021]

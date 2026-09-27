@@ -1,0 +1,15 @@
+[build-system]
+requires = ["setuptools>=64"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "weedrefine"
+version = "0.1.0"
+description = "Foundation model pseudo-label refinement for crop and weed UDA"
+requires-python = ">=3.10"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]   # keep pytest out of third_party/ (MIC, sam2 ship their own tests)

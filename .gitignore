@@ -1,0 +1,17 @@
+__pycache__/
+*.pyc
+*.egg-info/
+# leading slash: only the top-level folders (src/weedrefine/data/ is code)
+/data/
+/checkpoints/
+/work_dirs/
+/outputs/
+third_party/MIC/
+third_party/sam2/
+*.pth
+*.pt
+.ipynb_checkpoints/
+
+# personal context
+weedrefine-private.md
+CLAUDE.local.md
