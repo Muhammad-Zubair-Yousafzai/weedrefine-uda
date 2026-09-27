@@ -3,6 +3,17 @@
 | Date | Pair | Method | Seed | mIoU | Crop IoU | Weed IoU | Notes |
 |---|---|---|---|---|---|---|---|
 
+## MIC setup runs (not results)
+
+- 2026-09-27, Kaggle T4, code b8db987, MIC 2f932a9, config bean_2019_to_2021_s0_smoke
+  (50 iters, seed 0). Runs end to end: 110 source / 100 target train / 25 val images,
+  eval and checkpoint work. After 50 iters (lr still in warmup): IoU bg 17.01, crop
+  24.95, weed 6.02, mIoU 16.0. Memory 9744 MB. Speed ~3.4 s/iter on T4, so 40k iters
+  would take ~38 h on a T4. masked.decode.loss_seg = 0 (teacher below the 0.968
+  pseudo-label threshold this early); check it becomes > 0 in the full run.
+  Fixes needed on the way: MPLBACKEND=Agg on Kaggle; MIC debug images crash with
+  3 classes (patched in scripts/install_mic_rose.sh).
+
 ## Teacher-free SAM check (scripts/sam_check.py)
 
 2026-09-27, CPU, SAM 2.1 tiny, points_per_side 32, pred_iou 0.8, stability 0.9,

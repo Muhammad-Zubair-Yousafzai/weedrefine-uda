@@ -73,8 +73,9 @@ the authors' scripts/utils.py (black or orange = background, white = crop,
   nvidia/mit-b5 (pinned revision) by scripts/convert_mit_b5.py -> checkpoints/mit_b5.pth
   (1052 tensors, 81.4M params, legacy torch format). MIC loads it with strict=False, so
   kaggle_mic_setup.sh checks names against MIC's mit_b5.
-- NOT yet run: MIC (needs MIC env and GPU). Next: 50 iteration smoke test
-  on Kaggle, then full runs on a rented RTX 3090.
+- MIC smoke test (50 iters) passed on Kaggle T4 with notebooks/kaggle_mic_smoke.ipynb.
+  9.7 GB memory, ~3.4 s/iter on T4 (full 40k run ~38 h there, too long for Kaggle).
+- Next: full MIC runs (2 pairs x 3 seeds, 40k iters) on a rented RTX 3090.
 - Next: get the MIC teacher softmax for the 2019 -> 2021 pairs (Phase A), and
   test the SAM 2 and DINO wrappers on 2 or 3 images on CPU.
 
