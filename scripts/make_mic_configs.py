@@ -3,6 +3,8 @@
 Each file inherits mic_daformer_rose_512x512.py and sets the source/target data
 roots (inside MIC: data/rose/{domain}/), the target split for that seed, and the seed.
 With --smoke, also writes {pair}_s{first seed}_smoke.py: 50 iterations, eval at the end.
+With --iters N (other than the base 40000), files are named {pair}_s{seed}_{N/1000}k.py
+and override the schedule: eval every N/10, checkpoint every N/5 (latest kept).
 """
 import argparse
 from pathlib import Path
@@ -25,6 +27,13 @@ data = dict(
     test=dict(data_root=tgt_root, img_suffix='{tgt_suffix}', split='splits/seed{seed}_val.txt'))
 """
 
+ITERS = """
+# Shorter schedule than the base 40k. Poly LR decay follows max_iters; warmup stays 1500.
+runner = dict(type='IterBasedRunner', max_iters={iters})
+checkpoint_config = dict(by_epoch=False, interval={ckpt}, max_keep_ckpts=1)
+evaluation = dict(interval={ev}, metric='mIoU')
+"""
+
 SMOKE = """
 # Smoke test: a few iterations to check the setup runs end to end.
 runner = dict(type='IterBasedRunner', max_iters=50)
@@ -45,7 +54,11 @@ def main():
     ap.add_argument("--data", default="data/mic", help="output of prepare_mic_data.py")
     ap.add_argument("--out", default="mic/configs/rose")
     ap.add_argument("--smoke", action="store_true")
+    ap.add_argument("--iters", type=int, default=40000, help="40000 = base config schedule")
     args = ap.parse_args()
+    suffix = "" if args.iters == 40000 else f"_{args.iters // 1000}k"
+    extra = "" if args.iters == 40000 else ITERS.format(
+        iters=args.iters, ckpt=args.iters // 5, ev=args.iters // 10)
 
     out = Path(args.out)
     for p in args.pairs:
@@ -56,8 +69,9 @@ def main():
                       src_suffix=image_suffix(args.data, src),
                       tgt_suffix=image_suffix(args.data, tgt))
         for seed in cfg["seeds"]:
-            name = f"{cfg['name']}_s{seed}"
-            (out / f"{name}.py").write_text(TEMPLATE.format(seed=seed, name=name, **fields))
+            name = f"{cfg['name']}_s{seed}{suffix}"
+            (out / f"{name}.py").write_text(
+                TEMPLATE.format(seed=seed, name=name, **fields) + extra)
             print("wrote", out / f"{name}.py")
         if args.smoke:
             seed = cfg["seeds"][0]
