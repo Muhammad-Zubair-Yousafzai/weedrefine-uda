@@ -12,6 +12,11 @@ third_party/sam2/
 *.pt
 .ipynb_checkpoints/
 
+# secrets: never commit tokens
+*tocken*
+*token*
+.env
+
 # personal context
 weedrefine-private.md
 CLAUDE.local.md

@@ -5,6 +5,9 @@
 #   the contents of data/mic/ (folders bipbip_haricot_2019, ...) and mit_b5.pth.
 # The conda env lives in /root (not /kaggle/working) so it is not saved as output.
 set -e
+# Kaggle sets MPLBACKEND to its notebook backend (matplotlib_inline), which the
+# Python 3.8 MIC env does not have. MIC only saves figures, so use Agg.
+export MPLBACKEND=Agg
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 MF=/root/miniforge
 PY=$MF/envs/mic/bin/python
