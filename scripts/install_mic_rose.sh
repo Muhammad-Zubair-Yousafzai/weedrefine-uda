@@ -17,6 +17,16 @@ if ! grep -q "ROSEDataset" "$INIT"; then
 fi
 grep -q "from .rose import ROSEDataset" "$INIT" || { echo "Failed to register ROSEDataset in $INIT"; exit 1; }
 
+# Patch MIC debug images for 3 classes. prepare_debug_out() treats any 3-channel
+# output as an RGB image, so 3-class predictions (numpy) crash in denorm() at iter 0.
+# Images are torch tensors, predictions numpy: use that to tell them apart.
+VIS="$MIC/mmseg/models/utils/visualization.py"
+if ! grep -q "torch.is_tensor(out)" "$VIS"; then
+    sed -i "s/^    if out.shape\[0\] == 3:$/    if out.shape[0] == 3 and torch.is_tensor(out):  # ROSE patch/" "$VIS"
+    sed -i "s/^    elif out.shape\[0\] > 3:$/    elif out.shape[0] >= 3:  # ROSE patch: 3-class predictions/" "$VIS"
+fi
+[ "$(grep -c "ROSE patch" "$VIS")" = 2 ] || { echo "Failed to patch $VIS"; exit 1; }
+
 mkdir -p "$MIC/configs/rose"
 cp "$ROOT"/mic/configs/rose/*.py "$MIC/configs/rose/"
 
